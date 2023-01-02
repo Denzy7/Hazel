@@ -52,7 +52,7 @@ endif()
 
 add_library(shaderc_combined_lib INTERFACE)
 if(Vulkan_shaderc_combined_FOUND)
-  target_link_libraries(shaderc_combined_lib Vulkan::shaderc_combined)
+  target_link_libraries(shaderc_combined_lib INTERFACE Vulkan::shaderc_combined)
 else()
   message("Vulkan::shaderc_combined was NOT found!")
   message(" Attempting to set manually...")
@@ -69,57 +69,24 @@ endif()
 ########################################################################
 # For spirv-cross
 add_library(spirv-cross INTERFACE)
-
-add_library(spirv-cross-c_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-c_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-c.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
-add_library(spirv-cross-core_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-core_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-core.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
-add_library(spirv-cross-cpp_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-cpp_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-cpp.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
-add_library(spirv-cross-glsl_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-glsl_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-glsl.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
-add_library(spirv-cross-hlsl_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-hlsl_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-hlsl.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
-add_library(spirv-cross-msl_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-msl_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-msl.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
-add_library(spirv-cross-reflect_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-reflect_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-reflect.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
-add_library(spirv-cross-util_lib STATIC IMPORTED)
-set_target_properties(spirv-cross-util_lib PROPERTIES
-  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libspirv-cross-util.a"
-  INTERFACE_INCLUDE_DIRECTORIES "/usr/include"
-)
+find_library(spirv-cross-c_lib spirv-cross-c)
+find_library(spirv-cross-core_lib spirv-cross-core)
+find_library(spirv-cross-cpp_lib spirv-cross-cpp)
+find_library(spirv-cross-glsl_lib spirv-cross-glsl)
+find_library(spirv-cross-hlsl_lib spirv-cross-hlsl)
+find_library(spirv-cross-msl_lib spirv-cross-msl)
+find_library(spirv-cross-reflect_lib spirv-cross-reflect)
+find_library(spirv-cross-util_lib spirv-cross-util)
 
 target_link_libraries(spirv-cross INTERFACE
-  spirv-cross-c_lib
-  spirv-cross-core_lib
-  spirv-cross-cpp_lib
-  spirv-cross-glsl_lib
-  spirv-cross-hlsl_lib
-  spirv-cross-msl_lib
-  spirv-cross-reflect_lib
-  spirv-cross-util_lib
+  ${spirv-cross-c_lib}
+  ${spirv-cross-core_lib}
+  ${spirv-cross-cpp_lib}
+  ${spirv-cross-glsl_lib}
+  ${spirv-cross-hlsl_lib}
+  ${spirv-cross-msl_lib}
+  ${spirv-cross-reflect_lib}
+  ${spirv-cross-util_lib}
 )
 
 ########################################################################
@@ -288,6 +255,9 @@ target_link_libraries(HZ_Hazel_Scripting
 
 target_link_libraries(HZ_Platform_OpenGL
   Vulkan::Vulkan shaderc_combined_lib spirv-cross
+  Vulkan::glslang
+  Vulkan::SPIRV-Tools
+  SPIRV-Tools-opt
 )
 
 target_link_libraries(HZ_Hazel_Core
